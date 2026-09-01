@@ -6,6 +6,16 @@ type YouTubePlayerProps = {
   onError?: (message: string) => void
 }
 
+const PLAYBACK_RATE = 3
+
+function applyPlaybackRate(player: YT.Player) {
+  const rates = player.getAvailablePlaybackRates()
+  const rate = rates.includes(PLAYBACK_RATE)
+    ? PLAYBACK_RATE
+    : Math.max(...rates)
+  player.setPlaybackRate(rate)
+}
+
 let apiReadyPromise: Promise<void> | null = null
 
 function loadYouTubeApi(): Promise<void> {
@@ -60,7 +70,13 @@ export function YouTubePlayer({ videoId, index, onError }: YouTubePlayerProps) {
         },
         events: {
           onReady: (event) => {
+            applyPlaybackRate(event.target)
             event.target.playVideo()
+          },
+          onStateChange: (event) => {
+            if (event.data === YT.PlayerState.PLAYING) {
+              applyPlaybackRate(event.target)
+            }
           },
           onError: (event) => {
             const messages: Record<number, string> = {

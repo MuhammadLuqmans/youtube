@@ -28,6 +28,8 @@ declare namespace YT {
     seekTo(seconds: number, allowSeekAhead: boolean): void
     getDuration(): number
     getCurrentTime(): number
+    getAvailablePlaybackRates(): number[]
+    setPlaybackRate(rate: number): void
     destroy(): void
   }
 
